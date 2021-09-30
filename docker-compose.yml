@@ -1,0 +1,31 @@
+version: '3.3'
+services: 
+    db:
+      image: mongo:5.0.2
+      restart: unless-stopped
+      env_file: ./.env
+      ports:
+        - 27017:27017
+      volumes:
+        - db:/data/db
+    app:
+      depends_on:
+        - db
+      build: ./
+      restart: unless-stopped
+      env_file: ./.env
+      ports:
+        - 3000:3000
+      links:
+        - db
+      environment:
+        - DB_HOST=db
+        - DB_NAME=user-auth
+        - DB_PORT=27017
+      stdin_open: true
+      tty: true
+
+volumes:
+  db:
+    external:
+      name: 'mongodb'
