@@ -1,5 +1,6 @@
 const router = require('express').Router();
 const auth = require('../middleware/auth');
+const { createDummy } = require('../config/faker');
 
 router.get('/', auth, (req, res) => res.send('Welcome User'));
 
@@ -7,6 +8,11 @@ router.get('/', auth, (req, res) => res.send('Welcome User'));
 router.use('/', require('./users'));
 
 // Contact Routes
-router.use('/contact/', require('./contacts'));
+router.use('/contacts/', require('./contacts'));
+
+router.get('/createdummy', async (req, res) => {
+    await createDummy(10);
+    res.send('done.');
+});
 
 module.exports = router;

@@ -6,8 +6,9 @@ const jwt = require('jsonwebtoken');
 //All contacts
 router.get('/', async (req, res) => {
     try {
-        const user = jwt.decode(req.headers.authorization).user_id;
-        const contacts = await User.findOne({ _id: user }, 'contacts').populate('contacts');
+        //const user = jwt.decode(req.headers.authorization).user_id;
+        //const contacts = await User.findOne({ _id: user }, 'contacts').populate('contacts');
+        const contacts = await Contact.find();
         res.status(200).json(contacts);
     } catch (error) {
         res.status(400).send(error.message);
@@ -17,14 +18,17 @@ router.get('/', async (req, res) => {
 // Contact by ID
 router.get('/:id', async (req, res) => {
     try {
-        const user = jwt.decode(req.headers.authorization).user_id;
+        //const user = jwt.decode(req.headers.authorization).user_id;
 
-        const isUserHaveContact = await User.findOne({ _id: user, contacts: { $in: [req.params.id] } });
-
+        //const isUserHaveContact = await User.findOne({ _id: user, contacts: { $in: [req.params.id] } });
+        /*
         if (isUserHaveContact) {
             const contact = await Contact.findById({ _id: req.params.id });
             res.status(200).json(contact);
         } else res.status(404).send('Contact didn\'t find.');
+        */
+       const contact = await Contact.findOne({ _id: req.params.id });
+       res.status(200).json(contact);
 
     } catch (error) {
         res.status(400).send(error.message);
@@ -37,14 +41,14 @@ router.post('/', async (req, res) => {
         const { name, email, address, jobPosition, phone, mobile, website,
             taxID, contactType, parentID } = req.body;
 
-        const user = jwt.decode(req.headers.authorization).user_id;
+        //const user = jwt.decode(req.headers.authorization).user_id;
 
         const contact = await Contact.create({
             name, email, address, jobPosition, phone, mobile, website,
             taxID, contactType, parentID
         });
 
-        await User.findByIdAndUpdate(user, { $push: { contacts: contact._id } }, { new: true });
+        //await User.findByIdAndUpdate(user, { $push: { contacts: contact._id } }, { new: true });
 
         res.status(201).json(contact);
 
@@ -56,13 +60,16 @@ router.post('/', async (req, res) => {
 // Update Contact
 router.patch('/:id', async (req, res) => {
     try {
-        const user = await jwt.decode(req.headers.authorization).user_id;
+        //const user = await jwt.decode(req.headers.authorization).user_id;
 
-        const isUserHaveContact = await User.findOne({ _id: user, contacts: { $in: [req.params.id] } });
+        /*const isUserHaveContact = await User.findOne({ _id: user, contacts: { $in: [req.params.id] } });
         if (isUserHaveContact) {
             const contact = await Contact.findOneAndUpdate({ _id: req.params.id }, req.body, { new: true });
             res.status(200).json(contact);
-        } else res.status(404).send('Contact didn\'t find.');
+        } else res.status(404).send('Contact didn\'t find.');*/
+        const contact = await Contact.findOneAndUpdate({ _id: req.params.id }, req.body, { new: true });
+        res.status(200).json(contact);
+
     } catch (error) {
         res.status(400).send(error.message);
     }
@@ -71,7 +78,7 @@ router.patch('/:id', async (req, res) => {
 // Delete Contact
 router.delete('/:id', async (req, res) => {
     try {
-        const user = await jwt.decode(req.headers.authorization).user_id;
+        /*const user = await jwt.decode(req.headers.authorization).user_id;
 
         const isUserHaveContact = await User.findOne({ _id: user, contacts: { $in: [req.params.id] } });
         if (isUserHaveContact) {
@@ -79,8 +86,10 @@ router.delete('/:id', async (req, res) => {
             const contact = await Contact.findOneAndDelete({ _id: req.params.id });
 
             res.status(200).json(contact);
-        } else res.status(404).send('Contact didn\'t find.');
-        
+        } else res.status(404).send('Contact didn\'t find.');*/
+        const contact = await Contact.findOneAndDelete({ _id: req.params.id });
+
+        res.status(200).json(contact);
     } catch (error) {
         res.status(400).send(error.message);
     }
